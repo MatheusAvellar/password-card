@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title> Password Card </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" rel="stylesheet"/>
+  <link href="./index.css" rel="stylesheet"/>
+  <script type="text/javascript" src="./forge.min.js"></script>
+</head>
+<body>
+  <main>
+    <h1> Password Card </h1>
+    <label>
+      Seed:
+      <input id="seed_input" type="text" oninput="sha(this.value)"/>
+    </label>
+    <section id="full">
+<div class="empty"></div>
+<b>A B</b><b>C D</b><b>E F</b><b>G H</b><b>I J</b><b>K L</b><b>M N</b><b>O P</b>
+<b>Q R</b><b>S T</b><b>U V</b><b>W X</b><b>Y Z</b><b>! @</b><b>? #</b><b>$ &amp;</b>
+<div class="empty"></div>
+<b>0</b>  <i>🐸</i>
+<b>1</b>  <i>🐶</i>
+<b>2</b>  <i>🐵</i>
+<b>3</b>  <i>🦊</i>
+<b>4</b>  <i>🐱</i>
+<b>5</b>  <i>🦁</i>
+<b>6</b>  <i>🐯</i>
+<b>7</b>  <i>🐴</i>
+<b>8</b>  <i>🦄</i>
+<b>9</b>  <i>🦓</i>
+<b>10</b> <i>🐮</i>
+<b>11</b> <i>🐷</i>
+<b>12</b> <i>🐗</i>
+<b>13</b> <i>🦒</i>
+<b>14</b> <i>🐭</i>
+<b>15</b> <i>🐻</i>
+<div class="empty"></div>
+<i>💎</i><i>⏰</i><i>🎁</i><i>🔋</i><i>💾</i><i>💣</i><i>🍕</i><i>📷</i>
+<i>📕</i><i>💰</i><i>🎀</i><i>🔮</i><i>💡</i><i>💊</i><i>🔫</i><i>🔒</i>
+<div class="empty"></div>
+      <section id="card"></section>
+    </section>
+    <label>
+      Password:
+      <output id="final">&nbsp;</output>
+    </label>
+    <button onclick="copy();">Copy</button>
+  </main>
+  <script type="text/javascript">
+    const seed_input = document.getElementById("seed_input");
+    const full_el = document.getElementById("full");
+    const card_el = document.getElementById("card");
+    const final_el = document.getElementById("final");
+    const picked = {
+      "top": null,
+      "left": null,
+      "right": null,
+      "bottom": null
+    };
+    let hash_arr;
+
+    document.body.onload = function() {
+      const seed = "banana";
+      seed_input.value = seed;
+      sha(seed);
+
+      document.querySelectorAll("#full b").forEach(
+        (el,i) => hookEvents(["row","col","left","top"],el,i)
+      );
+      document.querySelectorAll("#full i").forEach(
+        (el,i) => hookEvents(["col","row","bottom","right"],el,i)
+      );
+      function hookEvents(arr,el,i) {
+        const dir = i > 15 ? arr[0] : arr[1];
+        const pos = i > 15 ? arr[2] : arr[3];
+        const v = i % 16;
+        el.className = `${pos} ${dir}-${v}`;
+        el.dataset.position = v;
+        el.addEventListener("click", pick);
+      }
+    }
+
+    function pick() {
+      const el = this;
+      const dir = el.classList[0];
+      if(picked[dir] !== null) {
+        picked[dir].classList.remove("selected");
+      }
+      el.classList.add("selected");
+      picked[dir] = el;
+
+      calculate_password();
+    }
+
+    function calculate_password() {
+      if(picked.top && picked.bottom
+      && picked.left && picked.right) {
+        let top = +picked.top.dataset.position;
+        let left = +picked.left.dataset.position;
+        let right = +picked.right.dataset.position;
+        let bottom = +picked.bottom.dataset.position;
+
+        if(top < bottom) top = [bottom, bottom = top][0];
+        if(right < left) right = [left, left = right][0];
+
+        let built_password = "";
+
+        document.querySelectorAll("li.selected").forEach(function(el) {
+          el.classList.remove("selected");
+        });
+        // Right-most side of square
+        for(let i = left; i < right; i++) {
+          document.querySelector(`.row-${i}.col-${top}`).classList.add("selected");
+          built_password += hash_arr[i][top];
+        }
+        // Bottom-most side of square
+        for(let i = top; i > bottom; i--) {
+          document.querySelector(`.row-${right}.col-${i}`).classList.add("selected");
+          built_password += hash_arr[right][i];
+        }
+        // Left-most side of square
+        for(let i = right; i > left; i--) {
+          document.querySelector(`.row-${i}.col-${bottom}`).classList.add("selected");
+          built_password += hash_arr[i][bottom];
+        }
+        // Tops-most side of square
+        for(let i = bottom; i < top; i++) {
+          document.querySelector(`.row-${left}.col-${i}`).classList.add("selected");
+          built_password += hash_arr[left][i];
+        }
+
+        final_el.innerText = built_password || "\u200c";
+        if(built_password.length < 8) {
+          final_el.className = "warning";
+          // const extension = built_password.split("").reverse();
+          // extension.push(extension.shift())
+          // final_el.innerText += extension.join("");
+        } else {
+          final_el.className = "";
+          final_el.parentElement.dataset.len = built_password.length;
+        }
+      }
+    }
+
+    function sha(str) {
+      const md = forge.md.sha256.create();
+      for(let i = 0; i < 3; i++) md.update(i);
+
+      // Generate hash
+      let initial_hashes = "";
+      for(let i = 0; i < 8; i++) {
+        md.update(str + i);
+        initial_hashes += md.digest().toHex();
+      }
+      const hash = initial_hashes;
+
+      // Mix in all readable ASCII possibilities
+      const ascii_symbols = (
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        + "abcdefghijklmnopqrstuvwxyz"
+        + "0123456789"
+        + " !\"#$%&'()*+,-/:;<=>?@[\\]^_`{|}~"
+      ).split("");
+
+      const new_hash =
+        // Divides hash in array of up to 2 character strings
+        hash.match(/.{1,2}/g)
+            // Convert them to numbers from their hex value, then
+            // into character from the alphabet
+            .map(e => ascii_symbols[parseInt(e,16)%ascii_symbols.length])
+            // Join everything back into a string
+            .join("");
+
+      // Divides hash in array of up to 16 character strings
+      hash_arr = new_hash.match(/.{1,16}/g);
+
+      // Clear previous hash
+      while(card_el.lastChild)
+        card_el.removeChild(card_el.lastChild);
+
+      // Adds each string to table
+      for(let i = 0, l = hash_arr.length; i < l; i++) {
+        const row = document.createElement("ol");
+        row.className = `row-${i}`;
+        for(let j = 0, k = hash_arr[i].length; j < k; j++) {
+          const column = document.createElement("li");
+          column.className = `row-${i} col-${j}`;
+          column.innerText = hash_arr[i][j];
+          row.appendChild(column);
+        }
+        card_el.appendChild(row);
+      }
+
+      // Calculate the current password from the user selections
+      calculate_password();
+    }
+
+    function copy() {
+      const ta = document.createElement("textarea");
+      ta.style.position = "fixed";
+      ta.style.pointerEvents = "none";
+      ta.style.opacity = 0;
+      ta.value = final_el.innerText;
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+    }
+  </script>
+</body>
+</html>

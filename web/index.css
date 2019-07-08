@@ -1,0 +1,161 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  display: grid;
+  background-color: #efefef;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: antialiased;
+}
+main {
+  margin: auto;
+  box-sizing: border-box;
+  width: 450px;
+  font-family: "Roboto", "Open Sans", "Arial", sans-serif;
+}
+label {
+  font-size: 75%;
+}
+input, output {
+  border: 0;
+  margin: 0;
+  padding: 5px 8px;
+  font-family: "Roboto", "Open Sans", "Arial", sans-serif;
+  font-size: 16px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+#final {
+  cursor: text;
+  font-family: "Roboto Mono", monospace;
+  white-space: pre;
+}
+#final.warning {
+  background-color: #ffffb1;
+}
+#final.warning::after {
+  content: "(short)";
+  font-family: "Roboto", "Open Sans", "Arial", sans-serif;
+  position: absolute;
+  margin-left: 10px;
+  font-size: 75%;
+  margin-top: 4px;
+  opacity: 0.6;
+}
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+li {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  vertical-align: middle;
+  line-height: 25px;
+  text-align: center;
+  white-space: pre;
+  font-family: "Roboto Mono", monospace;
+}
+#full {
+  margin: 12px 0;
+  outline: 1px solid #0a0a0a;
+  display: grid;
+  grid-template-rows: repeat(18, 25px);
+  grid-template-columns: repeat(18, 25px);
+}
+#full b, #full i, #full .empty {
+  vertical-align: middle;
+  line-height: 25px;
+  height: 25px;
+  width: 25px;
+  display: block;
+  text-align: center;
+  font-size: 75%;
+  font-style: normal;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  user-select: none;
+}
+#full .empty {
+  cursor: default;
+}
+#full b:nth-of-type(2n),
+#full i:nth-of-type(2n+1),
+#full .empty:first-of-type,
+#full .empty:last-of-type {
+  background-color: #e0e0e0;
+}
+#full b.selected,
+#full i.selected {
+  background-color: #3a3a3a;
+  color: #fff;
+}
+#card {
+  color: #0a0a0a;
+  outline: 1px solid #0a0a0a;
+  background-color: #fff;
+  box-sizing: border-box;
+  overflow: hidden;
+  grid-column-start: 2;
+  grid-row-start: 2;
+  grid-column-end: 18;
+  grid-row-end: 18;
+}
+button {
+  display: block;
+  margin: 12px auto;
+  padding: 5px 8px;
+  font-family: "Roboto", "Open Sans", "Arial", sans-serif;
+  font-size: 16px;
+  display: block;
+  width: 50%;
+  box-sizing: border-box;
+  background-color: #e0e0e0;
+  border: 1px solid #b0b0b0;
+}
+/*---------------------------------------*/
+.col-0.selected ~ #card .col-0,
+.col-1.selected ~ #card .col-1,
+.col-2.selected ~ #card .col-2,
+.col-3.selected ~ #card .col-3,
+.col-4.selected ~ #card .col-4,
+.col-5.selected ~ #card .col-5,
+.col-6.selected ~ #card .col-6,
+.col-7.selected ~ #card .col-7,
+.col-8.selected ~ #card .col-8,
+.col-9.selected ~ #card .col-9,
+.col-10.selected ~ #card .col-10,
+.col-11.selected ~ #card .col-11,
+.col-12.selected ~ #card .col-12,
+.col-13.selected ~ #card .col-13,
+.col-14.selected ~ #card .col-14,
+.col-15.selected ~ #card .col-15 { background-color: #e6f8ff; }
+/*---------------------------------------*/
+.row-0.selected ~ #card .row-0,
+.row-1.selected ~ #card .row-1,
+.row-2.selected ~ #card .row-2,
+.row-3.selected ~ #card .row-3,
+.row-4.selected ~ #card .row-4,
+.row-5.selected ~ #card .row-5,
+.row-6.selected ~ #card .row-6,
+.row-7.selected ~ #card .row-7,
+.row-8.selected ~ #card .row-8,
+.row-9.selected ~ #card .row-9,
+.row-10.selected ~ #card .row-10,
+.row-11.selected ~ #card .row-11,
+.row-12.selected ~ #card .row-12,
+.row-13.selected ~ #card .row-13,
+.row-14.selected ~ #card .row-14,
+.row-15.selected ~ #card .row-15 { background-color: #e6f8ff; }
+/*---------------------------------------*/
+.color {
+  background-color: attr(data-color);
+}
+li.selected {
+  background-color: #c1ebff !important;
+}
